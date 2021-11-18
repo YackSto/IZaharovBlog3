@@ -1,0 +1,21 @@
+{%extends 'base.html'%}
+
+{%block title%}Добавить новый пост - {%endblock title%}
+
+{%block content%}
+{%if user.is_authenticated%}
+<h1>Добавить новый пост</h1>
+
+<div class = "form-group">
+<form method="POST" enctype="multipart/form-data">
+{%csrf_token%}
+{{form.media}} {% comment %} Для создания скедитора {% endcomment %}
+{{form.as_p}}
+<button class="btn btn-secondary">Загрузить</button>
+</form>
+</div>
+{%else%}
+
+<h1 style="color: red;">Незарегистрированные пользователи не имеют права редактировать посты</h1>
+{%endif%}
+{%endblock content%}

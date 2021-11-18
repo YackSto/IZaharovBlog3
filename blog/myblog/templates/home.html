@@ -1,0 +1,68 @@
+{%extends 'base.html'%}
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Блог Ильи Захарова</title>
+    
+</head>
+<body>
+    {%block content%}
+    <p>{%if q%}{{q}}{%endif %}</p>
+    <div class="categories"> {%if active == 'Все категории'%} <span class="active_category">Все категории</span> {%else%}  <a href="{%url 'home'%}">Все категории</a> {%endif%} {% for i in categories%} {%if active == i.name%}  <span class="active_category">{{i.name}}</span> {%else%} <a href="{%url 'category' i.slug %}">{{i.name}}</a> {%endif%} {%endfor%}</div>
+    <div class="adaptive_categories">
+
+    <span class="active_category">{{active}} <img src="{% static 'myblog/images/arrow.svg' %}" style="transform: rotate(-90deg)"></span>
+    <ul>
+    <li><a href="{%url 'home' %}">Все категории</a></li>
+    {%for i in categories%}
+        {%if i.name != active%}
+        <li><a href="{%url 'category' i.slug %}">{{i.name}}</a></li>
+        {%endif%}
+    {%endfor%}
+    </ul>
+
+</div>
+    
+    <h3 class="newnews">Самое свежее</h3>
+
+    <div class="search_bar" >
+      <form action="{%url 'search' %}" method="GET" style="display:flex" >
+       {% csrf_token %}
+        <input type="search" placeholder="Введите название..." name="search" class="form-control" required="">
+        <button type="submit" class="btn btn-primary">
+          <span class="fa fa-search" aria-hidden="true">Найти</span>
+        </button>
+      </form>
+    </div>
+    {%if posts|length > 0 %}
+    
+    
+        <div class="post_container">
+            {%for post in posts%}
+    <div class="post_preview">
+    <a href="{%url 'detail_post' post.pk %}"><div style="background-image:url({{post.photo.url}}); background-size:contain; width:inherit; height:300px; background-repeat:no-repeat; background-position:center center"></div></a>
+    <a class="post_header" href="{%url 'detail_post' post.pk %}"><h2>{{post.title|safe}}</h2></a>
+    <p><a class="category" href="{%url 'category' post.category.slug %}">{{post.category.name}}</a> <span class="post_date" style="margin-left:10px;">{{post.time_created}}</span></p>
+    <p>{{post.snippet|safe}}</p>
+    {% comment %} <p>{{post.body|linebreaks|truncatewords:50|linebreaks}}</p> {% endcomment %}
+    <a href="{%url 'detail_post' post.pk %}" class="read_more">Читать далее</a>
+    {%if user.is_superuser %}
+        <a href="{%url 'delete_post' post.pk%}" class="delete_admin"><button type="button" class="btn btn-dark">Удалить пост</button></a>
+    {%endif%}
+    </div>
+    {%endfor%}
+        </div>
+    
+    {%else%}
+    <h1>К сожалению, пока постов нет... </h1>
+    {%endif%}
+    {%endblock content%}
+        
+</body>
+
+
+</html>

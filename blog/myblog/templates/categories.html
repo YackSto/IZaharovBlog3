@@ -1,0 +1,23 @@
+{%extends 'base.html'%}
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Блог Ильи Захарова</title>
+</head>
+<body>
+    {%block content%}
+    <div class="categories"><a href="{%url 'home'%}">Все категории секс</a> / {% for i in categories%}<a href="{%url 'category' i.slug %}">{{i.name}}</a> / {%endfor%}</div>
+    {%for post in posts%}
+    <h2><a href="{%url 'detail_post' post.pk %}">{{post.title}}</a> - {{post.category.name}}</h2>
+    <div style="display: flex; width:100%; align-items:center">
+    <img src="{{post.photo.url}}" style="max-width: 10%; float: left;">
+    <p>{{post.body|linebreaks|truncatewords:50|safe}}</p>
+    </div>
+    {%endfor%}
+    {%endblock content%}
+</body>
+</html>

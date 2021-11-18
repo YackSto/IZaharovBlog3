@@ -1,0 +1,82 @@
+{%extends 'base.html'%}
+{%load static%}
+{%block title%}{{post.title}} - {%endblock%}
+
+{%block content%}
+<a href="{% url "category" post.category.slug %}" class="go_back"><img src="{% static 'myblog/images/arrow.svg' %}" style="transform:rotate(90deg);"> Вернуться к категории</a>
+<div class="categories"> {%if active == ''%} <span class="active_category">Все категории</span> {%else%}  <a href="{%url 'home'%}">Все категории</a> {%endif%} {% for i in categories%} {%if active == i.name%}  <span class="active_category">{{i.name}}</span> {%else%} <a href="{%url 'category' i.slug %}">{{i.name}}</a> {%endif%} {%endfor%}</div>
+
+<div class="adaptive_categories">
+
+<span class="active_category">{{active}} <img src="{% static 'myblog/images/arrow.svg' %}" style="transform:rotate(270deg)"></span>
+<ul>
+<li><a href="{%url 'home' %}">Все категории</a></li>
+{%for i in categories%}
+    {%if i.name != active%}
+    <li><a href="{%url 'category' i.slug %}">{{i.name}}</a></li>
+    {%endif%}
+{%endfor%}
+</ul>
+
+</div>
+<div class="post">
+    
+    <h2 class="post_title">{{post.title}}</h2>
+    <p class="post_date" style="text-align:center;">{{post.time_created}}</p>
+    <p class="description">{{post.body|safe}}</p>
+    <div class="post_photo" style="background-image: url({{post.photo.url}})"></div>
+    <p class="author_post">Автор: {{post.author.username}}</p>
+    
+    
+    {% if user.is_authenticated%}
+    <form action="{%url 'like_post' post.pk %}" method="POST" class="like_form">
+    {%csrf_token %}
+    
+    
+    <button type="submit", name="post_id" value="{{ post.id }}" class="like_btn"><img src="{%if liked%} {% static 'myblog/images/unlike.jpg'%} {%else%}{% static 'myblog/images/like.png' %} {%endif%}" style="width:50px" class="{%if not liked%} like_it {%endif%}"></button> <span>{{total_likes}}</span>
+    </form>
+    {%else%}
+    
+     <div class="unregistered"><button class="btn unregister_like"><img src="{% static 'myblog/images/like.png' %}" style="width:50px"></button> <span>{{total_likes}}</span></div>
+    {%endif%}
+
+    <div class="comments">
+    <h2>Комментарии</h2>
+    
+    <div>
+    <a class="add_comment" href="{%url 'add_comment' post.pk%}">Добавить комментарий</a>
+    </div>
+    {% if post.comments.all %}
+
+    <div class="comments_container">
+    {%for comment in post.comments.all %}
+        <div class="comment">
+        <p><strong>{{comment.name}}</strong> - {{comment.time_created}} </p>
+        <p>{{comment.body}}</p>
+        </div>
+    {%endfor%}
+    </div>
+    
+    {%endif%}
+
+    </div>
+
+
+    {%if user.is_superuser%}
+        <div class="admin_functions">
+        <a href="{%url 'delete_post' post.pk%}" class="delete_admin"><button type="button" class="btn btn-dark">Удалить пост</button></a>
+        <a href=" {%url 'edit_post' post.pk%} " style="margin-left:20px">Редактировать</a>
+        </div>
+    {%endif%}
+</div>
+
+
+
+
+<script> 
+let audio = new Audio('{% static 'myblog/music/verynice.mp3' %}');
+if(document.querySelector(".like_it")) {
+    document.querySelector(".like_it").onclick = () => {audio.play();alert("НРАИЦА")}
+}
+</script>
+{%endblock content%}
